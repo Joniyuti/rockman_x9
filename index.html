@@ -1,0 +1,2582 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>ROCKMAN X9 — THE WHITE PARADISE（ロックマンX9）</title>
+<style>
+  :root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --bg-void: #030712;
+    --panel-bg: rgba(9, 16, 32, 0.94);
+    --x-blue: #38bdf8;
+    --x-deep: #0284c7;
+    --zero-red: #fb7185;
+    --axl-amber: #fbbf24;
+    --sera-mint: #6ee7b7;
+    --gold: #fde047;
+    --border-neon: #38bdf8;
+    --text-main: #f8fafc;
+    --text-sub: #94a3b8;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100dvh;
+    background: radial-gradient(circle at 50% 25%, #0f2142 0%, #030712 82%);
+    color: var(--text-main);
+    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", "Noto Sans JP", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  /* PC Companion Side Panels (Shown on desktop >= 960px, hidden on mobile) */
+  .pc-side-panel {
+    display: none;
+    width: 248px;
+    max-height: calc(100dvh - 30px);
+    background: rgba(8, 15, 30, 0.92);
+    border: 1.5px solid rgba(56, 189, 248, 0.48);
+    border-radius: 12px;
+    padding: 13px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8);
+    flex-direction: column;
+    gap: 8px;
+    font-size: 12px;
+    line-height: 1.48;
+  }
+
+  @media (min-width: 960px) {
+    .pc-side-panel {
+      display: flex;
+    }
+  }
+
+  .side-heading {
+    font-size: 13.5px;
+    font-weight: 900;
+    color: var(--x-blue);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.35);
+    padding-bottom: 4px;
+    letter-spacing: 0.4px;
+  }
+
+  .key-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 2.5px 0;
+    border-bottom: 1px dashed rgba(148, 163, 184, 0.18);
+  }
+
+  .keycap {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #172744;
+    border: 1px solid #38bdf8;
+    color: #fef08a;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 10.5px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  /* Strict 9:16 Portrait Game Container with Mobile Chrome Safe-Area Isolation */
+  #game-shell {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    width: min(100vw, calc((100dvh - var(--safe-top) - var(--safe-bottom)) * 9 / 16));
+    height: min(calc(100dvh - var(--safe-top) - var(--safe-bottom)), calc(100vw * 16 / 9));
+    max-height: 100dvh;
+    margin-top: var(--safe-top);
+    margin-bottom: var(--safe-bottom);
+    background: #050b18;
+    border: 2px solid #2563eb;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.95);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    container-type: inline-size;
+  }
+
+  /* Top Compact Hunter HUD */
+  #top-bar {
+    flex: 0 0 auto;
+    background: linear-gradient(180deg, #0d1a33 0%, #070e1f 100%);
+    border-bottom: 1.5px solid #1d4ed8;
+    padding: clamp(4px, 1.1cqw, 7px) clamp(7px, 1.8cqw, 12px);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    z-index: 25;
+  }
+
+  .hud-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+  }
+
+  .hunter-tag {
+    font-size: clamp(10px, 2.55cqw, 13.5px);
+    font-weight: 900;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+  }
+
+  .stat-pill {
+    font-size: clamp(9.5px, 2.35cqw, 12.5px);
+    font-weight: 800;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.14);
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    color: #e0f2fe;
+    white-space: nowrap;
+  }
+
+  .tiny-btn {
+    padding: 2px 7px;
+    border-radius: 5px;
+    border: 1px solid rgba(56, 189, 248, 0.55);
+    background: #132544;
+    color: #f8fafc;
+    font-size: clamp(9.5px, 2.3cqw, 12px);
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .tiny-btn.danger {
+    background: #7f1d1d;
+    border-color: #fb7185;
+  }
+
+  .tiny-btn.gold {
+    background: #78350f;
+    border-color: #fde047;
+    color: #fef9c3;
+  }
+
+  /* Central Action Viewport */
+  #viewport-wrap {
+    position: relative;
+    flex: 1 1 auto;
+    width: 100%;
+    overflow: hidden;
+    background: #040812;
+  }
+
+  #game-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* In-Stage Comms / Story Dialogue Overlay */
+  #comms-box {
+    position: absolute;
+    left: clamp(7px, 1.8cqw, 12px);
+    right: clamp(7px, 1.8cqw, 12px);
+    bottom: clamp(7px, 1.8cqw, 12px);
+    background: linear-gradient(180deg, rgba(10, 20, 42, 0.95) 0%, rgba(5, 11, 24, 0.98) 100%);
+    border: 2px solid #38bdf8;
+    border-radius: 9px;
+    padding: clamp(7px, 1.9cqw, 11px) clamp(9px, 2.2cqw, 13px);
+    display: none;
+    gap: 9px;
+    align-items: center;
+    z-index: 30;
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.9);
+    cursor: pointer;
+  }
+
+  #comms-box.active {
+    display: flex;
+  }
+
+  #comms-portrait {
+    width: clamp(46px, 12cqw, 62px);
+    height: clamp(46px, 12cqw, 62px);
+    border-radius: 7px;
+    border: 1.5px solid #fde047;
+    background: #0f172a;
+    flex: 0 0 auto;
+  }
+
+  .comms-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  #comms-speaker {
+    font-size: clamp(11px, 2.8cqw, 14.5px);
+    font-weight: 900;
+    color: #fde047;
+  }
+
+  #comms-text {
+    font-size: clamp(11px, 2.75cqw, 14px);
+    line-height: 1.45;
+    color: #f8fafc;
+  }
+
+  /* Bottom Virtual Gamepad Dock (Never overlaps canvas or mobile browser bottom bar) */
+  #gamepad-dock {
+    flex: 0 0 auto;
+    background: linear-gradient(180deg, #0b152b 0%, #050a16 100%);
+    border-top: 1.5px solid #1d4ed8;
+    padding: clamp(5px, 1.3cqw, 8px) clamp(6px, 1.6cqw, 10px);
+    display: grid;
+    grid-template-columns: 1.15fr 0.75fr 1.25fr;
+    gap: clamp(5px, 1.3cqw, 8px);
+    align-items: center;
+    z-index: 25;
+  }
+
+  .dpad-cluster {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(4px, 1cqw, 6px);
+  }
+
+  .mid-cluster {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: clamp(3px, 0.8cqw, 5px);
+  }
+
+  .action-cluster {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: clamp(4px, 1cqw, 6px);
+  }
+
+  .pad-btn {
+    background: linear-gradient(180deg, #1b3158 0%, #0f1d38 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.65);
+    border-radius: 8px;
+    color: #f8fafc;
+    font-weight: 900;
+    font-size: clamp(10.5px, 2.65cqw, 14px);
+    padding: clamp(8px, 2.1cqw, 12px) 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.1;
+    cursor: pointer;
+    touch-action: none;
+    box-shadow: 0 3px 0 #070e1d;
+  }
+
+  .pad-btn.pressed, .pad-btn:active {
+    transform: translateY(2px);
+    background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+    border-color: #fde047;
+    color: #fef9c3;
+    box-shadow: none;
+  }
+
+  .pad-btn.btn-atk {
+    background: linear-gradient(180deg, #15803d 0%, #14532d 100%);
+    border-color: #4ade80;
+  }
+
+  .pad-btn.btn-atk.pressed {
+    background: linear-gradient(180deg, #22c55e 0%, #15803d 100%);
+  }
+
+  .pad-btn.btn-sp {
+    background: linear-gradient(180deg, #9d174d 0%, #500724 100%);
+    border-color: #fb7185;
+  }
+
+  .pad-btn.btn-jmp {
+    background: linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 100%);
+    border-color: #60a5fa;
+  }
+
+  .pad-btn.btn-dsh {
+    background: linear-gradient(180deg, #b45309 0%, #78350f 100%);
+    border-color: #fbbf24;
+  }
+
+  .pad-sub {
+    font-size: clamp(8px, 1.9cqw, 10px);
+    color: #fde047;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    margin-top: 1px;
+  }
+
+  .mid-btn {
+    background: #152442;
+    border: 1px solid rgba(253, 224, 71, 0.55);
+    border-radius: 6px;
+    color: #fef9c3;
+    font-size: clamp(9px, 2.25cqw, 12px);
+    font-weight: 900;
+    padding: clamp(4px, 1cqw, 6px) 2px;
+    cursor: pointer;
+    touch-action: none;
+  }
+
+  .mid-btn:active {
+    background: #854d0e;
+  }
+
+  /* Full-Frame Screens & Modals (Title, Opening, Stage Select, Save/Delete, Ending) */
+  .screen-layer {
+    position: absolute;
+    inset: 0;
+    background: rgba(4, 9, 20, 0.97);
+    z-index: 45;
+    display: none;
+    flex-direction: column;
+    padding: clamp(10px, 2.5cqw, 16px);
+    gap: clamp(7px, 1.8cqw, 11px);
+    overflow-y: auto;
+  }
+
+  .screen-layer.active {
+    display: flex;
+  }
+
+  .x9-logo-wrap {
+    text-align: center;
+    padding-top: 2px;
+  }
+
+  .x9-sub {
+    font-size: clamp(9.5px, 2.35cqw, 12.5px);
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: #6ee7b7;
+  }
+
+  .x9-title {
+    font-size: clamp(22px, 5.8cqw, 34px);
+    font-weight: 900;
+    margin: 2px 0;
+    letter-spacing: 1px;
+    background: linear-gradient(180deg, #ffffff 0%, #38bdf8 55%, #1d4ed8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.9));
+  }
+
+  .x9-subtitle-jp {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #1e3a8a, #0284c7, #1e3a8a);
+    border: 1px solid #7dd3fc;
+    color: #fef9c3;
+    font-size: clamp(10.5px, 2.65cqw, 14px);
+    font-weight: 900;
+  }
+
+  .info-panel {
+    background: rgba(13, 24, 48, 0.92);
+    border: 1.5px solid rgba(56, 189, 248, 0.45);
+    border-radius: 9px;
+    padding: clamp(8px, 2cqw, 11px);
+    font-size: clamp(10.5px, 2.6cqw, 13.5px);
+    line-height: 1.48;
+  }
+
+  .menu-cta {
+    width: 100%;
+    padding: clamp(9px, 2.3cqw, 13px) 10px;
+    border-radius: 8px;
+    border: 1.5px solid #38bdf8;
+    background: linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 100%);
+    color: #ffffff;
+    font-size: clamp(12px, 3cqw, 15.5px);
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .menu-cta:hover, .menu-cta:active {
+    border-color: #fde047;
+    transform: scale(0.99);
+  }
+
+  .menu-cta.gold {
+    background: linear-gradient(180deg, #b45309 0%, #78350f 100%);
+    border-color: #fde047;
+    color: #fef9c3;
+  }
+
+  .menu-cta.danger {
+    background: linear-gradient(180deg, #9f1239 0%, #4c0519 100%);
+    border-color: #fb7185;
+    color: #ffe4e6;
+  }
+
+  .boss-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(6px, 1.5cqw, 9px);
+  }
+
+  .boss-card {
+    background: linear-gradient(180deg, #132342 0%, #0b1529 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.55);
+    border-radius: 9px;
+    padding: 8px;
+    text-align: left;
+    color: #f8fafc;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .boss-card:hover, .boss-card:active {
+    border-color: #fde047;
+    background: linear-gradient(180deg, #1e3a8a 0%, #0f172a 100%);
+  }
+
+  .boss-card.cleared {
+    border-color: #34d399;
+    background: linear-gradient(180deg, #064e3b 0%, #042f2e 100%);
+  }
+
+  .boss-card.final-boss {
+    grid-column: 1 / -1;
+    border-color: #fb7185;
+    background: linear-gradient(90deg, #4c0519 0%, #1e1b4b 50%, #4c0519 100%);
+    text-align: center;
+  }
+
+  /* Toast Banner */
+  #toast-msg {
+    position: absolute;
+    top: 42px;
+    left: 12px;
+    right: 12px;
+    background: rgba(9, 17, 34, 0.97);
+    border: 1.5px solid #fde047;
+    border-radius: 8px;
+    padding: 7px 11px;
+    font-size: clamp(10.5px, 2.65cqw, 13.5px);
+    font-weight: 800;
+    color: #fef9c3;
+    text-align: center;
+    z-index: 80;
+    display: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.9);
+  }
+
+  #toast-msg.show {
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+  <!-- PC Left Keyboard Guide -->
+  <aside class="pc-side-panel" aria-label="PCキーボード操作ガイド">
+    <div class="side-heading">⌨ PCキーボード操作</div>
+    <div class="key-item"><span>左右移動</span><span class="keycap">← → / A D</span></div>
+    <div class="key-item"><span>ジャンプ / 壁蹴り</span><span class="keycap">Z / Space / W</span></div>
+    <div class="key-item"><span>ダッシュ / 空中ダッシュ</span><span class="keycap">X / Shift</span></div>
+    <div class="key-item"><span>バスター(長押しチャージ)/斬撃</span><span class="keycap">C / J / Enter</span></div>
+    <div class="key-item"><span>特殊武器 / 必殺スキル</span><span class="keycap">V / K</span></div>
+    <div class="key-item"><span>ハンター交代 (X/ZERO/AXL)</span><span class="keycap">Q / E / Tab</span></div>
+    <div class="key-item"><span>ダブルアタック (ゲージ満タン)</span><span class="keycap">F</span></div>
+    <div class="key-item"><span>サブタンク回復</span><span class="keycap">R</span></div>
+    <div class="key-item"><span>ポーズ / 武器・セーブ</span><span class="keycap">P / Esc</span></div>
+    <div class="key-item"><span>BGM / SE ミュート</span><span class="keycap">M</span></div>
+    <div style="color:var(--text-sub);font-size:11px;margin-top:4px;">
+      ※スマホでは下部ゲームパッドでチャージしながらのジャンプ・ダッシュ同時押しに対応しています。
+    </div>
+  </aside>
+
+  <!-- Main 9:16 Portrait Game Shell -->
+  <main id="game-shell">
+    <div id="toast-msg" role="status" aria-live="polite"></div>
+
+    <!-- Top Compact Status HUD -->
+    <header id="top-bar">
+      <div class="hud-strip">
+        <span id="hud-hunter-name" class="hunter-tag" style="color:#38bdf8;">▶ X (PARADISE ARMOR)</span>
+        <span id="hud-weapon-name" class="stat-pill">武器: Xバスター</span>
+        <button id="btn-hud-pause" type="button" class="tiny-btn">☰ MENU [P]</button>
+      </div>
+      <div class="hud-strip">
+        <span id="hud-subtank" class="stat-pill" style="border-color:rgba(52,211,153,0.5);color:#a7f3d0;">🧪 SUB-TANK: 100%</span>
+        <span id="hud-double" class="stat-pill" style="border-color:rgba(251,191,36,0.55);color:#fde68a;">⚡ D-ATK: 0%</span>
+        <button id="btn-hud-mute" type="button" class="tiny-btn">🔊 [M]</button>
+      </div>
+    </header>
+
+    <!-- Central Action Canvas & Comms -->
+    <section id="viewport-wrap">
+      <canvas id="game-canvas"></canvas>
+
+      <!-- In-Stage Comms / Story Box -->
+      <div id="comms-box">
+        <canvas id="comms-portrait" width="64" height="64"></canvas>
+        <div class="comms-content">
+          <div id="comms-speaker">セラ（新世代レプリロイド歌姫）</div>
+          <div id="comms-text">エックスさん、気を付けて！ 前方に高エネルギー反応を検知しました！</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Multi-Touch Gamepad Dock -->
+    <footer id="gamepad-dock">
+      <div class="dpad-cluster">
+        <button type="button" class="pad-btn" data-key="left">◀<span class="pad-sub">[←/A]</span></button>
+        <button type="button" class="pad-btn" data-key="right">▶<span class="pad-sub">[→/D]</span></button>
+      </div>
+
+      <div class="mid-cluster">
+        <button id="pad-tag" type="button" class="mid-btn">🔄 交代 [Q]</button>
+        <button id="pad-double" type="button" class="mid-btn">⚡ D-ATK [F]</button>
+      </div>
+
+      <div class="action-cluster">
+        <button type="button" class="pad-btn btn-dsh" data-key="dash">DASH<span class="pad-sub">[X]</span></button>
+        <button type="button" class="pad-btn btn-jmp" data-key="jump">JUMP<span class="pad-sub">[Z]</span></button>
+        <button type="button" class="pad-btn btn-sp" data-key="special">SKILL<span class="pad-sub">[V]</span></button>
+        <button type="button" class="pad-btn btn-atk" data-key="attack">SHOT<span class="pad-sub">[C]</span></button>
+      </div>
+    </footer>
+
+    <!-- 1. TITLE SCREEN -->
+    <div id="title-screen" class="screen-layer active">
+      <div class="x9-logo-wrap">
+        <div class="x9-sub">SEQUEL TO ROCKMAN X8 — 21XX A.D.</div>
+        <h1 class="x9-title">ROCKMAN X9</h1>
+        <div class="x9-subtitle-jp">✦ 失われた楽園の継承者 ✦</div>
+      </div>
+
+      <canvas id="title-art-canvas" style="width:100%;height:178px;border-radius:10px;border:1.5px solid #38bdf8;"></canvas>
+
+      <div class="info-panel">
+        <div style="color:#fde047;font-weight:900;margin-bottom:3px;">◆ X8の衝撃のラストから続く「幻の正統続編」</div>
+        ・<b>3大ハンター即時交代：</b>エックス（3段階チャージ＆パラダイスアーマー）、ゼロ（ゼットセイバー3連撃＆必殺技）、アクセル（二丁拳銃＆ホバー）をいつでも切替！<br>
+        ・<b>ヒロイン「セラ」＆ナビゲーター陣：</b>ルミネの遺志に抗う新世代レプリロイド「セラ」と共に、空中楽園エデンIXの陰謀を打ち砕け！
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <button id="btn-start-new" type="button" class="menu-cta">▶ NEW GAME（オープニングから開始） <span class="keycap">Enter</span></button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <button id="btn-open-load" type="button" class="menu-cta gold">📂 LOAD DATA（続きから）</button>
+          <button id="btn-title-del" type="button" class="menu-cta danger">🗑 セーブデータ削除</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. OPENING / ENDING STORY CUTSCENE LAYER -->
+    <div id="story-screen" class="screen-layer">
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid #38bdf8;padding-bottom:6px;">
+        <span id="story-header-badge" style="font-weight:900;color:#fde047;font-size:13.5px;">PROLOGUE — X8のその後</span>
+        <button id="btn-skip-story" type="button" class="tiny-btn gold">▶▶ スキップ [Esc]</button>
+      </div>
+
+      <canvas id="story-canvas" style="width:100%;height:190px;border-radius:10px;border:1.5px solid #38bdf8;"></canvas>
+
+      <div id="story-speaker-line" style="font-weight:900;color:#6ee7b7;font-size:14px;">ナレーション</div>
+      <div id="story-text-box" class="info-panel" style="min-height:110px;font-size:13px;line-height:1.6;"></div>
+
+      <button id="btn-story-next" type="button" class="menu-cta" style="margin-top:auto;">▼ 次へ進む [Space / Enter]</button>
+    </div>
+
+    <!-- 3. BOSS SELECT / STAGE SELECT SCREEN -->
+    <div id="select-screen" class="screen-layer">
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid #38bdf8;padding-bottom:5px;">
+        <span style="font-weight:900;color:#38bdf8;font-size:14px;">🎯 MISSION SELECT（出撃ステージ選択）</span>
+        <div style="display:flex;gap:5px;">
+          <button id="btn-select-save" type="button" class="tiny-btn gold">💾 セーブ</button>
+          <button id="btn-select-title" type="button" class="tiny-btn">🏠 タイトル</button>
+        </div>
+      </div>
+
+      <div id="armor-status-bar" class="info-panel" style="padding:7px 9px;font-size:11.5px;"></div>
+
+      <div id="boss-grid-container" class="boss-grid"></div>
+
+      <div class="info-panel" style="font-size:11.5px;margin-top:auto;">
+        <strong style="color:#fde047;">◆ 弱点属性サイクル＆アーマー獲得：</strong><br>
+        炎(フェンリル) ＞ 氷(リヴァイア) ＞ 重力(スフィンクス) ＞ 雷(ヴァルキュリア) ＞ 炎！<br>
+        各ボス撃破で<b>特殊武器・ゼロ必殺技・ライト博士のパラダイスアーマー</b>を獲得！
+      </div>
+    </div>
+
+    <!-- 4. SAVE / LOAD / DELETE MANAGER -->
+    <div id="save-screen" class="screen-layer">
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid #fde047;padding-bottom:6px;">
+        <span id="save-screen-title" style="font-weight:900;color:#fde047;font-size:14.5px;">💾 セーブ・データ管理</span>
+        <button id="btn-close-save" type="button" class="tiny-btn">✕ 閉じる [Esc]</button>
+      </div>
+
+      <div id="save-slot-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+
+      <div style="margin-top:auto;padding-top:8px;border-top:1px solid rgba(255,255,255,0.15);">
+        <button id="btn-delete-all-saves" type="button" class="menu-cta danger">🗑 すべてのセーブデータを削除する</button>
+      </div>
+    </div>
+
+    <!-- 5. PAUSE / WEAPON & ARMOR MENU -->
+    <div id="pause-screen" class="screen-layer">
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid #38bdf8;padding-bottom:6px;">
+        <span style="font-weight:900;color:#38bdf8;font-size:14.5px;">⏸ HUNTER SYSTEM MENU</span>
+        <button id="btn-resume-game" type="button" class="tiny-btn gold">▶ 再開 [P]</button>
+      </div>
+
+      <div class="info-panel">
+        <div style="font-weight:900;color:#fde047;margin-bottom:5px;">◆ 特殊武器・スキル切替（クリックで装備）</div>
+        <div id="weapon-switch-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <button id="btn-pause-subtank" type="button" class="menu-cta" style="background:linear-gradient(180deg,#059669,#065f46);border-color:#6ee7b7;">🧪 サブタンクでライフ全回復 [R]</button>
+        <button id="btn-pause-save" type="button" class="menu-cta gold">💾 現在の進行状況をセーブ</button>
+        <button id="btn-pause-abort" type="button" class="menu-cta danger">↩ ステージ選択へ戻る</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- PC Right Companion Lore & Boss Weakness Panel -->
+  <aside class="pc-side-panel" aria-label="弱点属性・キャラクターガイド">
+    <div class="side-heading">⚔ ハンター＆弱点ガイド</div>
+    <div style="font-size:11.5px;">
+      <b style="color:#38bdf8;">■ エックス (X)：</b>長押しチャージで3段階バスター！ 特殊武器でボスの弱点を突け。<br>
+      <b style="color:#fb7185;">■ ゼロ (ZERO)：</b>ゼットセイバー3連斬撃！ 地上スキルで龍炎刃・雷神撃・落鳳破を発動。<br>
+      <b style="color:#fbbf24;">■ アクセル (AXL)：</b>連射バレット＆空中ホバー＋コピーストライク！
+    </div>
+    <div class="side-heading" style="margin-top:4px;">🔥 4大ボス弱点サイクル</div>
+    <div style="font-size:11.5px;color:#cbd5e1;">
+      ・<b>ブレイズ・フェンリル(炎)</b> ← 雷が弱点<br>
+      ・<b>グレイシャー・リヴァイア(氷)</b> ← 炎が弱点<br>
+      ・<b>ボルト・ヴァルキュリア(雷)</b> ← 重力が弱点<br>
+      ・<b>グラビティ・スフィンクス(重力)</b> ← 氷が弱点
+    </div>
+    <div id="pc-side-progress" style="margin-top:auto;padding-top:8px;border-top:1px solid rgba(56,189,248,0.35);font-size:11.5px;color:#fde047;">
+      撃破ボス: 0 / 4 ｜ アーマー: 0 / 4
+    </div>
+  </aside>
+
+<script>
+(() => {
+  'use strict';
+
+  const SAVE_KEY = 'rockman_x9_white_paradise_saves_v1';
+  const MAX_SLOTS = 3;
+
+  /* =========================================================
+     1. NON-BLOCKING TOAST NOTIFICATION
+     ========================================================= */
+  let toastHandle = null;
+  function showToast(text, duration = 2700) {
+    const el = document.getElementById('toast-msg');
+    if (!el) return;
+    el.textContent = text;
+    el.classList.add('show');
+    if (toastHandle) clearTimeout(toastHandle);
+    toastHandle = setTimeout(() => el.classList.remove('show'), duration);
+  }
+
+  /* =========================================================
+     2. PROCEDURAL ROCKMAN X CHIPTUNE / SYNTH AUDIO ENGINE
+     ========================================================= */
+  class X9SoundEngine {
+    constructor() {
+      this.ctx = null;
+      this.enabled = true;
+      this.bgmInterval = null;
+      this.currentBgm = null;
+      this.step = 0;
+    }
+
+    unlock() {
+      try {
+        if (!this.ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) this.ctx = new AC();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      } catch (_e) {
+        // Ignore audio policy errors
+      }
+    }
+
+    toggleMute() {
+      this.enabled = !this.enabled;
+      if (!this.enabled) {
+        this.stopBgm();
+      } else if (this.currentBgm) {
+        const track = this.currentBgm;
+        this.currentBgm = null;
+        this.playBgm(track);
+      }
+      return this.enabled;
+    }
+
+    note(freq, dur = 0.14, type = 'square', vol = 0.032, delay = 0, slideTo = null) {
+      if (!this.enabled || !freq) return;
+      this.unlock();
+      if (!this.ctx) return;
+      try {
+        const t = this.ctx.currentTime + delay;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t);
+        if (slideTo) {
+          osc.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+        }
+        gain.gain.setValueAtTime(vol, t);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + dur + 0.015);
+      } catch (_e) {
+        // Ignore
+      }
+    }
+
+    sfxBuster(level = 0) {
+      if (level === 0) {
+        this.note(980, 0.08, 'square', 0.032, 0, 320);
+      } else if (level === 1) {
+        this.note(720, 0.14, 'sawtooth', 0.045, 0, 210);
+        this.note(1080, 0.12, 'square', 0.035, 0.02, 420);
+      } else {
+        this.note(540, 0.24, 'sawtooth', 0.055, 0, 140);
+        this.note(1280, 0.22, 'square', 0.045, 0.02, 360);
+      }
+    }
+
+    sfxSaber() {
+      this.note(1250, 0.11, 'sawtooth', 0.042, 0, 240);
+      this.note(420, 0.13, 'triangle', 0.035, 0.02, 140);
+    }
+
+    sfxDash() {
+      this.note(260, 0.12, 'sawtooth', 0.032, 0, 520);
+    }
+
+    sfxJump() {
+      this.note(280, 0.11, 'square', 0.028, 0, 620);
+    }
+
+    sfxHit(weak = false) {
+      if (weak) {
+        this.note(880, 0.09, 'square', 0.048, 0, 1320);
+        this.note(1174, 0.12, 'sawtooth', 0.045, 0.05, 660);
+      } else {
+        this.note(210, 0.08, 'square', 0.038, 0, 95);
+      }
+    }
+
+    sfxExplosion() {
+      this.note(140, 0.26, 'sawtooth', 0.055, 0, 42);
+      this.note(95, 0.32, 'square', 0.048, 0.04, 35);
+    }
+
+    sfxHeal() {
+      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+        this.note(f, 0.11, 'triangle', 0.04, i * 0.05);
+      });
+    }
+
+    sfxWarning() {
+      this.note(880, 0.18, 'sawtooth', 0.05, 0, 440);
+      this.note(880, 0.18, 'sawtooth', 0.05, 0.24, 440);
+    }
+
+    stopBgm() {
+      if (this.bgmInterval) {
+        clearInterval(this.bgmInterval);
+        this.bgmInterval = null;
+      }
+    }
+
+    playBgm(track) {
+      if (this.currentBgm === track && this.bgmInterval) return;
+      this.currentBgm = track;
+      this.stopBgm();
+      if (!this.enabled) return;
+
+      const songs = {
+        title: {
+          ms: 175,
+          type: 'square',
+          vol: 0.022,
+          notes: [329.63, 329.63, 493.88, 440.00, 392.00, 440.00, 493.88, 0, 587.33, 587.33, 659.25, 587.33, 493.88, 440.00, 392.00, 493.88]
+        },
+        select: {
+          ms: 155,
+          type: 'sawtooth',
+          vol: 0.02,
+          notes: [220, 220, 261.63, 293.66, 329.63, 293.66, 261.63, 246.94, 220, 220, 329.63, 392.00, 440.00, 392.00, 329.63, 293.66]
+        },
+        stage: {
+          ms: 145,
+          type: 'square',
+          vol: 0.021,
+          notes: [329.63, 493.88, 659.25, 587.33, 493.88, 440.00, 493.88, 659.25, 392.00, 587.33, 783.99, 739.99, 659.25, 587.33, 493.88, 587.33]
+        },
+        boss: {
+          ms: 125,
+          type: 'sawtooth',
+          vol: 0.024,
+          notes: [164.81, 164.81, 196.00, 164.81, 220.00, 207.65, 196.00, 146.83, 164.81, 164.81, 246.94, 220.00, 196.00, 185.00, 164.81, 146.83]
+        },
+        ending: {
+          ms: 280,
+          type: 'triangle',
+          vol: 0.03,
+          notes: [523.25, 659.25, 783.99, 1046.50, 987.77, 783.99, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51, 1046.50, 987.77, 783.99, 0]
+        }
+      };
+
+      const s = songs[track] || songs.stage;
+      this.step = 0;
+      this.bgmInterval = setInterval(() => {
+        if (!this.enabled) return;
+        const n = s.notes[this.step % s.notes.length];
+        if (n > 0) this.note(n, (s.ms / 1000) * 1.05, s.type, s.vol, 0);
+        this.step++;
+      }, s.ms);
+    }
+  }
+
+  const sfx = new X9SoundEngine();
+
+  /* =========================================================
+     3. LORE, BOSSES, WEAPONS, ARMOR & HEROINE SERA DATA
+     ========================================================= */
+  const BOSSES = [
+    {
+      id: 'fenrir',
+      name: 'ブレイズ・フェンリル',
+      title: '灼熱の狼型新世代レプリロイド',
+      elem: 'fire',
+      weak: 'thunder',
+      color: '#f97316',
+      accent: '#fde047',
+      weaponName: 'フェンリルファング (炎)',
+      zeroSkill: '龍炎刃 (昇龍炎斬)',
+      armorPart: 'arm',
+      armorLabel: 'ARM PARTS（スパイラルチャージ解放）',
+      bgTheme: 'volcano',
+      preBanter: { speaker: 'ブレイズ・フェンリル', text: '「旧世代のハンターどもめ！ 軌道楽園エデンIXの門は、俺の紅蓮の牙が焼き尽くす！」' },
+      seraComms: '「フェンリルは素早い突進の後に隙ができます！ 雷属性『ヴァルキュリアスパーク』が弱点です！」'
+    },
+    {
+      id: 'leviathan',
+      name: 'グレイシャー・リヴァイア',
+      title: '絶対零度の海竜レプリロイド',
+      elem: 'ice',
+      weak: 'fire',
+      color: '#38bdf8',
+      accent: '#e0f2fe',
+      weaponName: 'フロストランス (氷)',
+      zeroSkill: '氷烈斬 (急降下氷撃)',
+      armorPart: 'foot',
+      armorLabel: 'FOOT PARTS（エアダッシュ解放）',
+      bgTheme: 'glacier',
+      preBanter: { speaker: 'グレイシャー・リヴァイア', text: '「愚かな旧式機よ……ルミネ様の遺した『白い進化』の前に永遠の氷河となれ！」' },
+      seraComms: '「リヴァイアの氷結弾はジャンプで回避できます！ 炎属性『フェンリルファング』で装甲を溶かせます！」'
+    },
+    {
+      id: 'valkyrie',
+      name: 'ボルト・ヴァルキュリア',
+      title: '天空の雷撃戦乙女',
+      elem: 'thunder',
+      weak: 'gravity',
+      color: '#facc15',
+      accent: '#fef08a',
+      weaponName: 'ヴァルキュリアスパーク (雷)',
+      zeroSkill: '雷神撃 (電撃突進突き)',
+      armorPart: 'body',
+      armorLabel: 'BODY PARTS（被ダメージ35%軽減）',
+      bgTheme: 'sky',
+      preBanter: { speaker: 'ボルト・ヴァルキュリア', text: '「光速の雷撃についてこられるかしら？ エックス、あなたの『無限の可能性』とやらを見せてみなさい！」' },
+      seraComms: '「空中からの落雷に注意してください！ 重力属性『シンギュラリティオーブ』で動きを封じられます！」'
+    },
+    {
+      id: 'sphinx',
+      name: 'グラビティ・スフィンクス',
+      title: '次元重力の守護神機',
+      elem: 'gravity',
+      weak: 'ice',
+      color: '#a855f7',
+      accent: '#e9d5ff',
+      weaponName: 'シンギュラリティオーブ (重力)',
+      zeroSkill: '落鳳破 (全方位重力弾)',
+      armorPart: 'head',
+      armorLabel: 'HEAD PARTS（オートエネルギー回復）',
+      bgTheme: 'ruins',
+      preBanter: { speaker: 'グラビティ・スフィンクス', text: '「重力こそ宇宙の理……新世代レプリロイドによる新秩序に跪くのだ！」' },
+      seraComms: '「重力球の引き寄せに気をつけて！ 氷属性『フロストランス』で重力コアを凍結できます！」'
+    }
+  ];
+
+  const FINAL_BOSS = {
+    id: 'eden_core',
+    name: 'セラフ・ルミネ ＆ シグマ・オメガ',
+    title: '空中楽園エデンIX 中枢コア',
+    elem: 'omega',
+    weak: 'none',
+    color: '#fb7185',
+    accent: '#ffffff',
+    bgTheme: 'eden',
+    preBanter: { speaker: 'セラフ・ルミネ', text: '「フフフ……アクセルの額に遺した『白い種』とシグマのウイルスが融合し、真の楽園が誕生したのだ！」' },
+    seraComms: '「エックスさん、ゼロさん、アクセルさん！ わたしの歌（共振波）で白いDNAの支配を抑えます！ みんなの力を一つに！」'
+  };
+
+  const OPENING_SCRIPT = [
+    {
+      speaker: 'ナレーション（21XX年・ヤコブ事変より数ヶ月後）',
+      bg: 'space',
+      text: '軌道エレベーター『ヤコブ』の崩壊とルミネ撃破から数ヶ月――。新世代レプリロイド「アクセル」の額には、あの日突き刺さった謎の白い破片が今も微かな光を放っていた。'
+    },
+    {
+      speaker: 'ヒロイン：セラ（新世代レプリロイド歌姫）',
+      bg: 'eden',
+      text: '「聞こえますか、イレギュラーハンター本部！ わたしは新世代レプリロイドのセラ……！ 上空に出現した空中要塞『エデンIX』が、全レプリロイドの白いDNAを強制暴走させようとしています！」'
+    },
+    {
+      speaker: 'アクセル',
+      bg: 'hunter_hq',
+      text: '「くっ……俺の額の破片も共鳴してやがる！ でも絶対に操られたりなんかしないぜ！ エックス、ゼロ、俺も一緒に行く！」'
+    },
+    {
+      speaker: 'ゼロ',
+      bg: 'hunter_hq',
+      text: '「シグマの残滓とルミネのプログラムが融合したか……。何度蘇ろうと、俺たちが斬り伏せるまでだ。」'
+    },
+    {
+      speaker: 'エックス',
+      bg: 'hunter_hq',
+      text: '「セラ、必ず君と新世代のみんなを救い出す！ 誰も犠牲にさせない――イレギュラーハンター、出撃する！」'
+    }
+  ];
+
+  const ENDING_SCRIPT = [
+    {
+      speaker: 'セラフ・ルミネ ＆ シグマ・オメガ',
+      bg: 'eden',
+      text: '「バカな……旧世代と新世代が互いを信じ、ここまで共鳴するだと……！？ 楽園のプログラムが……消えていく……！！」'
+    },
+    {
+      speaker: 'セラ（新世代レプリロイド）',
+      bg: 'dawn',
+      text: '「やりました……！ エデンIXの暴走コードが完全に浄化され、アクセルさんの額の破片も無害な結晶へと変わりました！」'
+    },
+    {
+      speaker: 'アクセル',
+      bg: 'dawn',
+      text: '「へへっ、頭がスッキリしたぜ！ やっぱり俺は、エックスやゼロと一緒のイレギュラーハンターが一番似合ってるな！」'
+    },
+    {
+      speaker: 'ゼロ',
+      bg: 'dawn',
+      text: '「戦いの理由など単純なことだ。守りたい仲間と、守るべき未来がそこにある――それだけで十分だ。」'
+    },
+    {
+      speaker: 'エックス（ROCKMAN X9 — THE WHITE PARADISE 完）',
+      bg: 'dawn',
+      text: '「人間も、旧世代も、新世代も……手を取り合えばきっと本当の楽園を創れる。さあ帰ろう、みんなの待つ場所へ！」'
+    }
+  ];
+
+  /* =========================================================
+     4. PERSISTENT PROGRESS & 3-SLOT SAVE / DELETE SYSTEM
+     ========================================================= */
+  const progress = {
+    defeated: [], // ['fenrir', 'leviathan', 'valkyrie', 'sphinx']
+    armor: { arm: false, foot: false, body: false, head: false },
+    subTank: 100,
+    doubleGauge: 50,
+    score: 0,
+    activeHunter: 'x', // 'x', 'zero', 'axl'
+    selectedWeapon: 'buster', // 'buster', 'fire', 'ice', 'thunder', 'gravity'
+    storyMode: 'opening', // 'opening' or 'ending'
+    storyStep: 0,
+    saveMode: 'save',
+    pendingDelSlot: null,
+    pendingDelAll: false
+  };
+
+  function resetProgress() {
+    progress.defeated = [];
+    progress.armor = { arm: false, foot: false, body: false, head: false };
+    progress.subTank = 100;
+    progress.doubleGauge = 50;
+    progress.score = 0;
+    progress.activeHunter = 'x';
+    progress.selectedWeapon = 'buster';
+  }
+
+  function readAllSaves() {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      return raw ? (JSON.parse(raw) || {}) : {};
+    } catch (_e) {
+      return {};
+    }
+  }
+
+  function writeAllSaves(obj) {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(obj));
+    } catch (_e) {
+      showToast('セーブデータの書き込みに失敗しました。');
+    }
+  }
+
+  function saveToSlot(slotNum) {
+    const saves = readAllSaves();
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const armorCnt = Object.values(progress.armor).filter(Boolean).length;
+
+    saves[String(slotNum)] = {
+      slot: slotNum,
+      defeated: [...progress.defeated],
+      armor: { ...progress.armor },
+      subTank: progress.subTank,
+      doubleGauge: progress.doubleGauge,
+      score: progress.score,
+      activeHunter: progress.activeHunter,
+      summary: `撃破ボス ${progress.defeated.length}/4 ｜ アーマー ${armorCnt}/4`,
+      timestamp: dateStr
+    };
+    writeAllSaves(saves);
+    progress.pendingDelSlot = null;
+    sfx.sfxHeal();
+    showToast(`SLOT ${slotNum} にセーブしました！`);
+    renderSaveScreen();
+  }
+
+  function loadFromSlot(slotNum) {
+    const saves = readAllSaves();
+    const d = saves[String(slotNum)];
+    if (!d) {
+      showToast('このスロットにはデータがありません。');
+      return;
+    }
+    progress.defeated = Array.isArray(d.defeated) ? [...d.defeated] : [];
+    progress.armor = { arm: false, foot: false, body: false, head: false, ...(d.armor || {}) };
+    progress.subTank = typeof d.subTank === 'number' ? d.subTank : 100;
+    progress.doubleGauge = typeof d.doubleGauge === 'number' ? d.doubleGauge : 50;
+    progress.score = d.score || 0;
+    progress.activeHunter = d.activeHunter || 'x';
+    progress.selectedWeapon = 'buster';
+
+    hideAllScreens();
+    openStageSelect();
+    sfx.sfxHeal();
+    showToast(`SLOT ${slotNum} のデータをロードしました！`);
+  }
+
+  function deleteSaveSlot(slotNum) {
+    if (progress.pendingDelSlot !== slotNum) {
+      progress.pendingDelSlot = slotNum;
+      showToast(`確認：もう一度「削除確定」を押すと SLOT ${slotNum} を削除します。`);
+      renderSaveScreen();
+      return;
+    }
+    const saves = readAllSaves();
+    delete saves[String(slotNum)];
+    writeAllSaves(saves);
+    progress.pendingDelSlot = null;
+    sfx.sfxHit(false);
+    showToast(`SLOT ${slotNum} のセーブデータを削除しました。`);
+    renderSaveScreen();
+  }
+
+  function deleteAllSaves() {
+    if (!progress.pendingDelAll) {
+      progress.pendingDelAll = true;
+      showToast('警告：もう一度「全データ削除確定」を押すと全セーブが消去されます。');
+      document.getElementById('btn-delete-all-saves').textContent = '⚠ 全データ削除確定（取り消し不可）';
+      return;
+    }
+    try {
+      localStorage.removeItem(SAVE_KEY);
+    } catch (_e) {
+      // Ignore
+    }
+    progress.pendingDelAll = false;
+    progress.pendingDelSlot = null;
+    document.getElementById('btn-delete-all-saves').textContent = '🗑 すべてのセーブデータを削除する';
+    sfx.sfxExplosion();
+    showToast('すべてのセーブデータを削除しました。');
+    renderSaveScreen();
+  }
+
+  /* =========================================================
+     5. INPUT CONTROLLER (MULTI-TOUCH GAMEPAD + PC KEYBOARD)
+     ========================================================= */
+  const input = {
+    left: false,
+    right: false,
+    jump: false,
+    jumpJustPressed: false,
+    dash: false,
+    dashJustPressed: false,
+    attack: false,
+    attackJustPressed: false,
+    attackJustReleased: false,
+    special: false,
+    specialJustPressed: false
+  };
+
+  function setVirtualKey(key, isDown) {
+    sfx.unlock();
+    if (key === 'left') input.left = isDown;
+    else if (key === 'right') input.right = isDown;
+    else if (key === 'jump') {
+      if (isDown && !input.jump) input.jumpJustPressed = true;
+      input.jump = isDown;
+    } else if (key === 'dash') {
+      if (isDown && !input.dash) input.dashJustPressed = true;
+      input.dash = isDown;
+    } else if (key === 'attack') {
+      if (isDown && !input.attack) input.attackJustPressed = true;
+      if (!isDown && input.attack) input.attackJustReleased = true;
+      input.attack = isDown;
+    } else if (key === 'special') {
+      if (isDown && !input.special) input.specialJustPressed = true;
+      input.special = isDown;
+    }
+  }
+
+  // Multi-touch pointer bindings for mobile bottom gamepad
+  document.querySelectorAll('.pad-btn[data-key]').forEach(btn => {
+    const k = btn.dataset.key;
+    const down = (e) => {
+      e.preventDefault();
+      btn.classList.add('pressed');
+      setVirtualKey(k, true);
+    };
+    const up = (e) => {
+      e.preventDefault();
+      btn.classList.remove('pressed');
+      setVirtualKey(k, false);
+    };
+    btn.addEventListener('pointerdown', down);
+    btn.addEventListener('pointerup', up);
+    btn.addEventListener('pointercancel', up);
+    btn.addEventListener('pointerleave', up);
+  });
+
+  /* =========================================================
+     6. REAL-TIME 2D ACTION ENGINE (PHYSICS, COMBAT, BOSS AI)
+     ========================================================= */
+  const game = {
+    mode: 'idle', // 'idle', 'playing', 'paused', 'warning', 'victory'
+    stageData: null,
+    cameraX: 0,
+    stageWidth: 2400,
+    groundY: 430,
+    platforms: [],
+    enemies: [],
+    projectiles: [],
+    particles: [],
+    afterimages: [],
+    boss: null,
+    bossSpawned: false,
+    warningTimer: 0,
+    hitStop: 0,
+    shake: 0,
+    commsTimer: 0,
+    player: {
+      x: 80,
+      y: 350,
+      vx: 0,
+      vy: 0,
+      w: 28,
+      h: 38,
+      facing: 1,
+      hp: 100,
+      maxHp: 100,
+      onGround: false,
+      onWall: 0, // -1 left wall, 1 right wall
+      dashTimer: 0,
+      airDashUsed: false,
+      chargeFrames: 0,
+      saberCombo: 0,
+      saberTimer: 0,
+      invuln: 0,
+      regenTick: 0
+    }
+  };
+
+  function buildStageGeometry(bossDef) {
+    game.stageWidth = 2250;
+    game.groundY = 435;
+    game.cameraX = 0;
+    game.boss = null;
+    game.bossSpawned = false;
+    game.projectiles = [];
+    game.particles = [];
+    game.afterimages = [];
+    game.warningTimer = 0;
+
+    const p = game.player;
+    p.x = 75;
+    p.y = 360;
+    p.vx = 0;
+    p.vy = 0;
+    p.facing = 1;
+    p.hp = p.maxHp;
+    p.onGround = false;
+    p.onWall = 0;
+    p.dashTimer = 0;
+    p.airDashUsed = false;
+    p.chargeFrames = 0;
+    p.saberCombo = 0;
+    p.saberTimer = 0;
+    p.invuln = 0;
+
+    // Platforms & Wall-Kick towers leading to the Boss Gate
+    game.platforms = [
+      { x: 220, y: 365, w: 110, h: 16 },
+      { x: 390, y: 310, w: 120, h: 16 },
+      { x: 580, y: 355, w: 130, h: 16 },
+      // Vertical wall-kick shaft
+      { x: 780, y: 240, w: 28, h: 195 },
+      { x: 920, y: 295, w: 130, h: 16 },
+      { x: 1120, y: 245, w: 120, h: 16 },
+      { x: 1320, y: 335, w: 140, h: 16 },
+      { x: 1530, y: 280, w: 120, h: 16 }
+    ];
+
+    // Reploid Mechaniloid Enemies along the stage
+    game.enemies = [
+      { x: 320, y: 399, w: 30, h: 36, hp: 30, maxHp: 30, vx: -1.1, kind: 'mettaur', shootCd: 90 },
+      { x: 510, y: 274, w: 30, h: 36, hp: 35, maxHp: 35, vx: 1.0, kind: 'soldier', shootCd: 75 },
+      { x: 700, y: 399, w: 34, h: 40, hp: 45, maxHp: 45, vx: -1.3, kind: 'armor_bot', shootCd: 80 },
+      { x: 980, y: 259, w: 30, h: 36, hp: 35, maxHp: 35, vx: -1.2, kind: 'soldier', shootCd: 70 },
+      { x: 1220, y: 399, w: 36, h: 42, hp: 50, maxHp: 50, vx: -1.4, kind: 'armor_bot', shootCd: 65 },
+      { x: 1450, y: 399, w: 32, h: 36, hp: 40, maxHp: 40, vx: -1.2, kind: 'mettaur', shootCd: 60 },
+      { x: 1660, y: 399, w: 38, h: 44, hp: 55, maxHp: 55, vx: -1.5, kind: 'armor_bot', shootCd: 55 }
+    ];
+
+    // Show Sera stage comms banner
+    showComms('セラ（ナビゲーター）', bossDef.seraComms, 4600);
+  }
+
+  function showComms(speaker, text, ms = 3600) {
+    const box = document.getElementById('comms-box');
+    document.getElementById('comms-speaker').textContent = speaker;
+    document.getElementById('comms-text').textContent = text;
+    drawPortraitIcon(document.getElementById('comms-portrait'), speaker.includes('セラ') ? 'sera' : 'boss');
+    box.classList.add('active');
+    game.commsTimer = Math.round(ms / 16.6);
+  }
+
+  function spawnSpark(x, y, color, count = 8, speed = 3.5) {
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const sp = 0.8 + Math.random() * speed;
+      game.particles.push({
+        x, y,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp,
+        life: 1.0,
+        color,
+        r: 2.2 + Math.random() * 2.8
+      });
+    }
+  }
+
+  function cycleHunter() {
+    const order = ['x', 'zero', 'axl'];
+    const idx = order.indexOf(progress.activeHunter);
+    progress.activeHunter = order[(idx + 1) % order.length];
+    game.player.chargeFrames = 0;
+    sfx.sfxJump();
+    spawnSpark(game.player.x + 14, game.player.y + 18,
+      progress.activeHunter === 'x' ? '#38bdf8' : progress.activeHunter === 'zero' ? '#fb7185' : '#fbbf24', 12, 4);
+    updateTopHud();
+  }
+
+  function triggerDoubleAttack() {
+    if (progress.doubleGauge < 100) {
+      showToast(`ダブルアタックゲージ不足 (${Math.floor(progress.doubleGauge)}%)`);
+      return;
+    }
+    progress.doubleGauge = 0;
+    game.hitStop = 10;
+    game.shake = 16;
+    sfx.sfxExplosion();
+    sfx.sfxHeal();
+
+    // Screen-wide triple hunter cross-slash & plasma barrage!
+    const px = game.player.x + 14;
+    const py = game.player.y + 18;
+    spawnSpark(px, py, '#38bdf8', 22, 7);
+    spawnSpark(px, py, '#fb7185', 22, 7);
+    spawnSpark(px, py, '#fde047', 22, 7);
+
+    game.enemies.forEach(en => {
+      en.hp -= 120;
+      spawnSpark(en.x + 15, en.y + 18, '#fde047', 12, 5);
+    });
+    if (game.boss) {
+      game.boss.hp = Math.max(0, game.boss.hp - 58);
+      game.boss.hurtTimer = 20;
+      spawnSpark(game.boss.x + 24, game.boss.y + 28, '#fde047', 24, 6);
+    }
+    showComms('X・ZERO・AXL 連携技', '「「「クロス・パラダイス・アタック！！」」」', 2400);
+    updateTopHud();
+  }
+
+  function useSubTank() {
+    if (progress.subTank <= 0) {
+      showToast('サブタンクのエネルギーが空です！');
+      return;
+    }
+    if (game.player.hp >= game.player.maxHp) {
+      showToast('ライフはすでに満タンです！');
+      return;
+    }
+    const need = game.player.maxHp - game.player.hp;
+    const heal = Math.min(need, progress.subTank);
+    game.player.hp += heal;
+    progress.subTank -= heal;
+    sfx.sfxHeal();
+    spawnSpark(game.player.x + 14, game.player.y + 18, '#34d399', 16, 4);
+    showToast(`サブタンクでライフを ${Math.round(heal)} 回復しました！`);
+    updateTopHud();
+  }
+
+  function firePlayerAttack(isChargeRelease = false, isSpecial = false) {
+    const p = game.player;
+    const cx = p.x + p.w / 2 + p.facing * 16;
+    const cy = p.y + p.h * 0.45;
+    const hunter = progress.activeHunter;
+
+    if (hunter === 'x') {
+      if (isSpecial && progress.selectedWeapon !== 'buster') {
+        const wElem = progress.selectedWeapon;
+        const colMap = { fire: '#f97316', ice: '#38bdf8', thunder: '#facc15', gravity: '#c084fc' };
+        sfx.sfxBuster(1);
+        game.projectiles.push({
+          from: 'player', x: cx, y: cy, vx: p.facing * 8.4, vy: wElem === 'gravity' ? -1.2 : 0,
+          r: 11, dmg: 22, elem: wElem, color: colMap[wElem] || '#38bdf8', life: 65
+        });
+        return;
+      }
+
+      let lvl = 0;
+      if (isChargeRelease) {
+        if (p.chargeFrames >= 58) lvl = 2;
+        else if (p.chargeFrames >= 24) lvl = 1;
+      }
+      sfx.sfxBuster(lvl);
+      const dmg = lvl === 2 ? (progress.armor.arm ? 36 : 28) : lvl === 1 ? 15 : 8;
+      const rad = lvl === 2 ? 15 : lvl === 1 ? 9 : 5;
+      const col = lvl === 2 ? '#fde047' : lvl === 1 ? '#38bdf8' : '#7dd3fc';
+      game.projectiles.push({
+        from: 'player', x: cx, y: cy, vx: p.facing * (9.2 + lvl * 1.4), vy: 0,
+        r: rad, dmg, elem: 'normal', color: col, life: 65, spiral: lvl === 2
+      });
+    } else if (hunter === 'zero') {
+      // Z-Saber close-range arc slash + EX Saber Skill!
+      sfx.sfxSaber();
+      p.saberTimer = 14;
+      p.saberCombo = (p.saberCombo % 3) + 1;
+
+      if (isSpecial && progress.defeated.length > 0) {
+        const skillElem = progress.selectedWeapon !== 'buster' ? progress.selectedWeapon : 'fire';
+        const colMap = { fire: '#fb7185', ice: '#38bdf8', thunder: '#facc15', gravity: '#c084fc' };
+        if (skillElem === 'fire') p.vy = -8.5; // Ryuenjin rising slash!
+        game.projectiles.push({
+          from: 'player', x: cx + p.facing * 10, y: cy, vx: p.facing * 7.2, vy: skillElem === 'ice' ? 4.5 : 0,
+          r: 22, dmg: 26, elem: skillElem, color: colMap[skillElem] || '#fb7185', life: 24, isSlash: true
+        });
+      } else {
+        const dmg = p.saberCombo === 3 ? 24 : 15;
+        game.projectiles.push({
+          from: 'player', x: cx + p.facing * 12, y: cy, vx: p.facing * 2.5, vy: 0,
+          r: 24, dmg, elem: 'saber', color: p.saberCombo === 3 ? '#fde047' : '#34d399', life: 12, isSlash: true
+        });
+      }
+    } else {
+      // AXL rapid twin-pistol bullets & Copy Strike
+      sfx.sfxBuster(isSpecial ? 1 : 0);
+      const spread = isSpecial ? [-1.6, 0, 1.6] : [(Math.random() - 0.5) * 0.9];
+      spread.forEach(vy => {
+        game.projectiles.push({
+          from: 'player', x: cx, y: cy, vx: p.facing * 10.5, vy,
+          r: isSpecial ? 7 : 4.5, dmg: isSpecial ? 12 : 7, elem: isSpecial ? 'thunder' : 'normal',
+          color: '#fbbf24', life: 55
+        });
+      });
+    }
+  }
+
+  function stepSimulation() {
+    if (game.mode !== 'playing' && game.mode !== 'warning') return;
+
+    if (game.commsTimer > 0) {
+      game.commsTimer--;
+      if (game.commsTimer === 0) {
+        document.getElementById('comms-box').classList.remove('active');
+      }
+    }
+
+    if (game.hitStop > 0) {
+      game.hitStop--;
+      return;
+    }
+    if (game.shake > 0) game.shake *= 0.84;
+
+    const p = game.player;
+
+    // Warning siren before Boss fight
+    if (game.mode === 'warning') {
+      game.warningTimer--;
+      if (game.warningTimer <= 0) {
+        game.mode = 'playing';
+        sfx.playBgm('boss');
+      }
+      return;
+    }
+
+    // Head Armor subtle auto-regen
+    if (progress.armor.head && p.hp < p.maxHp) {
+      p.regenTick++;
+      if (p.regenTick >= 95) {
+        p.regenTick = 0;
+        p.hp = Math.min(p.maxHp, p.hp + 1);
+      }
+    }
+
+    if (p.invuln > 0) p.invuln--;
+    if (p.saberTimer > 0) p.saberTimer--;
+
+    // Charge tracking for X
+    if (input.attack && progress.activeHunter === 'x') {
+      p.chargeFrames++;
+    }
+    if (input.attackJustPressed) {
+      if (progress.activeHunter !== 'x') {
+        firePlayerAttack(false, false);
+      } else {
+        firePlayerAttack(false, false);
+      }
+    }
+    if (input.attackJustReleased) {
+      if (progress.activeHunter === 'x' && p.chargeFrames >= 24) {
+        firePlayerAttack(true, false);
+      }
+      p.chargeFrames = 0;
+    }
+    if (input.specialJustPressed) {
+      firePlayerAttack(false, true);
+    }
+
+    // Dash & Air-Dash
+    if (input.dashJustPressed) {
+      if (p.onGround) {
+        p.dashTimer = 18;
+        sfx.sfxDash();
+      } else if (!p.airDashUsed && (progress.armor.foot || progress.activeHunter !== 'x')) {
+        p.airDashUsed = true;
+        p.dashTimer = 15;
+        p.vy = 0;
+        sfx.sfxDash();
+      }
+    }
+
+    const moveDir = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+    if (moveDir !== 0) p.facing = moveDir;
+
+    if (p.dashTimer > 0) {
+      p.dashTimer--;
+      p.vx = p.facing * 7.4;
+      if (p.dashTimer % 3 === 0) {
+        game.afterimages.push({ x: p.x, y: p.y, facing: p.facing, hunter: progress.activeHunter, life: 1.0 });
+      }
+    } else {
+      p.vx = moveDir * 3.8;
+    }
+
+    // Jump & Wall-Kick (Triangular jump!)
+    if (input.jumpJustPressed) {
+      if (p.onGround) {
+        p.vy = -10.4;
+        p.onGround = false;
+        sfx.sfxJump();
+      } else if (p.onWall !== 0) {
+        p.vy = -9.8;
+        p.vx = -p.onWall * 6.2;
+        p.facing = -p.onWall;
+        p.onWall = 0;
+        sfx.sfxJump();
+        spawnSpark(p.x + p.w / 2, p.y + p.h / 2, '#fde047', 7, 3);
+      }
+    }
+
+    // Axl Hover glide when holding Jump in mid-air
+    if (progress.activeHunter === 'axl' && input.jump && p.vy > 0.6 && !p.onGround) {
+      p.vy = 0.6;
+    } else {
+      p.vy += 0.52;
+    }
+
+    // Wall-slide friction
+    if (!p.onGround && p.onWall !== 0 && p.vy > 1.8) {
+      p.vy = 1.8;
+      if (Math.random() < 0.35) {
+        spawnSpark(p.x + (p.onWall > 0 ? p.w : 0), p.y + p.h * 0.7, '#fde047', 1, 1.5);
+      }
+    }
+
+    // Horizontal collision with platforms & stage boundaries
+    p.x += p.vx;
+    p.onWall = 0;
+    const minX = game.bossSpawned ? 1850 : 12;
+    const maxX = game.stageWidth - p.w - 16;
+    if (p.x < minX) { p.x = minX; p.onWall = -1; }
+    if (p.x > maxX) { p.x = maxX; p.onWall = 1; }
+
+    game.platforms.forEach(pl => {
+      if (p.x + p.w > pl.x && p.x < pl.x + pl.w && p.y + p.h > pl.y + 4 && p.y < pl.y + pl.h - 4) {
+        if (p.vx > 0) { p.x = pl.x - p.w; p.onWall = 1; }
+        else if (p.vx < 0) { p.x = pl.x + pl.w; p.onWall = -1; }
+      }
+    });
+
+    // Vertical collision
+    const prevBottom = p.y + p.h;
+    p.y += p.vy;
+    p.onGround = false;
+
+    game.platforms.forEach(pl => {
+      if (p.x + p.w > pl.x && p.x < pl.x + pl.w && prevBottom <= pl.y + 6 && p.y + p.h >= pl.y && p.vy >= 0) {
+        p.y = pl.y - p.h;
+        p.vy = 0;
+        p.onGround = true;
+        p.airDashUsed = false;
+      }
+    });
+
+    if (p.y + p.h >= game.groundY) {
+      p.y = game.groundY - p.h;
+      p.vy = 0;
+      p.onGround = true;
+      p.airDashUsed = false;
+    }
+
+    // Camera follow (locks into Boss Arena at x >= 1840)
+    if (!game.bossSpawned) {
+      const targetCam = Math.max(0, Math.min(1840, p.x - 110));
+      game.cameraX += (targetCam - game.cameraX) * 0.14;
+
+      if (p.x >= 1860) {
+        spawnBossArena();
+      }
+    } else {
+      game.cameraX += (1840 - game.cameraX) * 0.18;
+    }
+
+    // Update Projectiles
+    for (let i = game.projectiles.length - 1; i >= 0; i--) {
+      const pr = game.projectiles[i];
+      pr.x += pr.vx;
+      pr.y += pr.vy;
+      pr.life--;
+      if (pr.life <= 0) {
+        game.projectiles.splice(i, 1);
+        continue;
+      }
+
+      if (pr.from === 'player') {
+        // Check enemies
+        for (let j = game.enemies.length - 1; j >= 0; j--) {
+          const en = game.enemies[j];
+          if (pr.x + pr.r > en.x && pr.x - pr.r < en.x + en.w && pr.y + pr.r > en.y && pr.y - pr.r < en.y + en.h) {
+            en.hp -= pr.dmg;
+            sfx.sfxHit(false);
+            spawnSpark(pr.x, pr.y, pr.color, 6, 3);
+            if (!pr.isSlash && !pr.spiral) pr.life = 0;
+            if (en.hp <= 0) {
+              sfx.sfxExplosion();
+              spawnSpark(en.x + 15, en.y + 18, '#fde047', 16, 4.5);
+              progress.score += 300;
+              progress.subTank = Math.min(100, progress.subTank + 12);
+              progress.doubleGauge = Math.min(100, progress.doubleGauge + 18);
+              game.enemies.splice(j, 1);
+              updateTopHud();
+            }
+            break;
+          }
+        }
+
+        // Check Boss
+        if (game.boss && pr.life > 0) {
+          const b = game.boss;
+          if (pr.x + pr.r > b.x && pr.x - pr.r < b.x + b.w && pr.y + pr.r > b.y && pr.y - pr.r < b.y + b.h) {
+            const isWeak = b.weak && pr.elem === b.weak;
+            const dmg = isWeak ? Math.round(pr.dmg * 1.85) : pr.dmg;
+            b.hp = Math.max(0, b.hp - dmg);
+            b.hurtTimer = isWeak ? 16 : 7;
+            if (isWeak) game.hitStop = 4;
+            sfx.sfxHit(isWeak);
+            spawnSpark(pr.x, pr.y, isWeak ? '#fde047' : pr.color, isWeak ? 14 : 7, 4);
+            progress.doubleGauge = Math.min(100, progress.doubleGauge + (isWeak ? 12 : 5));
+            updateTopHud();
+            if (!pr.isSlash) pr.life = 0;
+          }
+        }
+      } else if (pr.from === 'enemy') {
+        if (p.invuln <= 0 && pr.x + pr.r > p.x && pr.x - pr.r < p.x + p.w && pr.y + pr.r > p.y && pr.y - pr.r < p.y + p.h) {
+          damagePlayer(pr.dmg || 12);
+          pr.life = 0;
+        }
+      }
+    }
+
+    // Update Stage Enemies
+    game.enemies.forEach(en => {
+      en.x += en.vx;
+      if (Math.abs(en.x - p.x) < 260) {
+        en.shootCd--;
+        if (en.shootCd <= 0) {
+          en.shootCd = 95;
+          const dir = p.x < en.x ? -1 : 1;
+          game.projectiles.push({
+            from: 'enemy', x: en.x + 15, y: en.y + 18, vx: dir * 4.2, vy: 0,
+            r: 5, dmg: 10, color: '#fb7185', life: 70
+          });
+        }
+      }
+      if (p.invuln <= 0 && p.x + p.w > en.x && p.x < en.x + en.w && p.y + p.h > en.y && p.y < en.y + en.h) {
+        damagePlayer(12);
+      }
+    });
+
+    // Update Boss AI
+    if (game.boss) {
+      updateBossAi(game.boss);
+    }
+
+    // Update Particles & Afterimages
+    for (let i = game.particles.length - 1; i >= 0; i--) {
+      const pt = game.particles[i];
+      pt.x += pt.vx;
+      pt.y += pt.vy;
+      pt.life -= 0.035;
+      if (pt.life <= 0) game.particles.splice(i, 1);
+    }
+    for (let i = game.afterimages.length - 1; i >= 0; i--) {
+      game.afterimages[i].life -= 0.08;
+      if (game.afterimages[i].life <= 0) game.afterimages.splice(i, 1);
+    }
+
+    // Clear just-pressed edge flags
+    input.jumpJustPressed = false;
+    input.dashJustPressed = false;
+    input.attackJustPressed = false;
+    input.attackJustReleased = false;
+    input.specialJustPressed = false;
+  }
+
+  function damagePlayer(rawDmg) {
+    const p = game.player;
+    const mult = progress.armor.body ? 0.65 : 1.0;
+    const dmg = Math.max(4, Math.round(rawDmg * mult));
+    p.hp = Math.max(0, p.hp - dmg);
+    p.invuln = 48;
+    game.shake = 10;
+    sfx.sfxHit(false);
+    spawnSpark(p.x + p.w / 2, p.y + p.h / 2, '#fb7185', 12, 4);
+
+    if (p.hp <= 0) {
+      // Auto-trigger Sub-Tank emergency rescue if available!
+      if (progress.subTank >= 30) {
+        p.hp = progress.subTank;
+        progress.subTank = 0;
+        sfx.sfxHeal();
+        showComms('セラ（緊急支援）', '「サブタンクから緊急エネルギー転送しました！ まだ戦えます！」', 2600);
+        updateTopHud();
+      } else {
+        game.mode = 'idle';
+        sfx.sfxExplosion();
+        showToast('ハンター撤退……ステージ選択へ戻ります。', 3200);
+        setTimeout(() => openStageSelect(), 1100);
+      }
+    }
+  }
+
+  function spawnBossArena() {
+    game.bossSpawned = true;
+    game.mode = 'warning';
+    game.warningTimer = 85;
+    sfx.sfxWarning();
+
+    const def = game.stageData;
+    game.boss = {
+      ...def,
+      x: 2070,
+      y: game.groundY - 56,
+      w: 46,
+      h: 56,
+      vx: 0,
+      vy: 0,
+      facing: -1,
+      hp: def.id === 'eden_core' ? 220 : 140,
+      maxHp: def.id === 'eden_core' ? 220 : 140,
+      phase: 1,
+      aiTimer: 45,
+      hurtTimer: 0
+    };
+    showComms(def.preBanter.speaker, def.preBanter.text, 3500);
+  }
+
+  function updateBossAi(b) {
+    const p = game.player;
+    if (b.hurtTimer > 0) b.hurtTimer--;
+
+    // Check Boss Defeat or Phase 2 Transformation
+    if (b.hp <= 0) {
+      if (b.id === 'eden_core' && b.phase === 1) {
+        // Transform into Sigma-Omega True Form!
+        b.phase = 2;
+        b.hp = 200;
+        b.maxHp = 200;
+        b.name = 'シグマ・オメガ最終形態';
+        b.color = '#fde047';
+        game.shake = 18;
+        sfx.sfxWarning();
+        spawnSpark(b.x + 23, b.y + 28, '#fde047', 28, 6);
+        showComms('シグマ・オメガ最終形態', '「ククク……ここからが真の絶望だ！ 楽園の裁きを受けるがいい！！」', 3400);
+        return;
+      }
+
+      // Boss Defeated!
+      game.mode = 'victory';
+      game.shake = 16;
+      sfx.sfxExplosion();
+      spawnSpark(b.x + 23, b.y + 28, '#fde047', 35, 7);
+      progress.score += 2500;
+      progress.subTank = 100;
+
+      if (b.id === 'eden_core') {
+        setTimeout(() => startStoryCutscene('ending'), 1600);
+      } else {
+        if (!progress.defeated.includes(b.id)) {
+          progress.defeated.push(b.id);
+        }
+        if (b.armorPart) progress.armor[b.armorPart] = true;
+        progress.selectedWeapon = b.elem;
+        showToast(`撃破！『${b.weaponName}』＆『${b.armorLabel}』を獲得！`, 4200);
+        setTimeout(() => openStageSelect(), 2100);
+      }
+      return;
+    }
+
+    b.facing = p.x < b.x ? -1 : 1;
+    b.aiTimer--;
+
+    if (b.aiTimer <= 0) {
+      b.aiTimer = b.phase === 2 ? 46 : 62;
+      const roll = Math.random();
+      if (roll < 0.42) {
+        // Jump & Dash lunge
+        b.vy = -10.5;
+        b.vx = b.facing * 5.6;
+      } else if (roll < 0.78) {
+        // Elemental Barrage
+        [-1.8, 0, 1.8].forEach(vy => {
+          game.projectiles.push({
+            from: 'enemy', x: b.x + b.w / 2, y: b.y + 24,
+            vx: b.facing * 5.8, vy, r: 7, dmg: 14, color: b.color, life: 80
+          });
+        });
+      } else {
+        // Ground shockwave
+        game.projectiles.push({
+          from: 'enemy', x: b.x + b.w / 2, y: game.groundY - 12,
+          vx: b.facing * 6.8, vy: 0, r: 10, dmg: 16, color: b.accent, life: 85
+        });
+      }
+    }
+
+    b.vy += 0.52;
+    b.x += b.vx;
+    b.y += b.vy;
+    b.vx *= 0.94;
+
+    if (b.x < 1865) b.x = 1865;
+    if (b.x > game.stageWidth - b.w - 20) b.x = game.stageWidth - b.w - 20;
+    if (b.y + b.h >= game.groundY) {
+      b.y = game.groundY - b.h;
+      b.vy = 0;
+    }
+
+    if (p.invuln <= 0 && p.x + p.w > b.x && p.x < b.x + b.w && p.y + p.h > b.y && p.y < b.y + b.h) {
+      damagePlayer(15);
+    }
+  }
+
+  /* =========================================================
+     7. HIGH-DPI CANVAS ART & SPRITE RENDERING
+     ========================================================= */
+  function fitCanvas(canvas) {
+    if (!canvas) return { ctx: null, w: 0, h: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const w = Math.max(1, Math.round(rect.width));
+    const h = Math.max(1, Math.round(rect.height));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    const pw = Math.round(w * dpr);
+    const ph = Math.round(h * dpr);
+    if (canvas.width !== pw || canvas.height !== ph) {
+      canvas.width = pw;
+      canvas.height = ph;
+    }
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx, w, h };
+  }
+
+  function drawHunterSprite(ctx, x, y, facing, hunter, isArmor, alpha = 1) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(x + 14, y + 19);
+    ctx.scale(facing, 1);
+
+    const primary = hunter === 'x' ? (isArmor ? '#f8fafc' : '#0284c7') : hunter === 'zero' ? '#e11d48' : '#d97706';
+    const trim = hunter === 'x' ? (isArmor ? '#38bdf8' : '#38bdf8') : hunter === 'zero' ? '#fde047' : '#38bdf8';
+
+    // Zero's flowing golden hair
+    if (hunter === 'zero') {
+      ctx.fillStyle = '#fde047';
+      ctx.beginPath();
+      ctx.moveTo(-6, -12);
+      ctx.lineTo(-22, 6);
+      ctx.lineTo(-10, 12);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Body armor
+    ctx.fillStyle = primary;
+    ctx.strokeStyle = '#090d16';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.roundRect(-9, -4, 18, 16, 4);
+    ctx.fill();
+    ctx.stroke();
+
+    // Chest core / trim
+    ctx.fillStyle = trim;
+    ctx.fillRect(-5, -1, 10, 5);
+
+    // Legs / Boots
+    ctx.fillStyle = primary;
+    ctx.fillRect(-9, 12, 7, 7);
+    ctx.fillRect(2, 12, 7, 7);
+
+    // Helmet
+    ctx.fillStyle = primary;
+    ctx.beginPath();
+    ctx.arc(0, -11, 9.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Helmet crystal
+    ctx.fillStyle = hunter === 'zero' ? '#38bdf8' : '#fb7185';
+    ctx.fillRect(2, -19, 4, 5);
+
+    // Face & Visor
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillRect(1, -12, 7, 8);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(4, -10, 3, 3);
+
+    // Weapon arm (X-Buster / Z-Saber / Axl Pistols)
+    ctx.fillStyle = trim;
+    ctx.fillRect(6, -1, 10, 6);
+
+    ctx.restore();
+  }
+
+  function drawPortraitIcon(canvas, kind) {
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 64, 64);
+    ctx.fillStyle = kind === 'sera' ? '#064e3b' : '#4c0519';
+    ctx.fillRect(0, 0, 64, 64);
+
+    if (kind === 'sera') {
+      // Heroine Sera portrait
+      ctx.fillStyle = '#e0f2fe';
+      ctx.beginPath();
+      ctx.arc(32, 30, 19, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffe4d6';
+      ctx.beginPath();
+      ctx.arc(32, 32, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(27, 31, 2.3, 0, Math.PI * 2);
+      ctx.arc(37, 31, 2.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fde047';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(18, 14, 28, 6);
+    } else {
+      // Boss commander portrait
+      ctx.fillStyle = '#fb7185';
+      ctx.beginPath();
+      ctx.arc(32, 32, 17, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fde047';
+      ctx.fillRect(22, 27, 8, 4);
+      ctx.fillRect(34, 27, 8, 4);
+    }
+  }
+
+  function drawBackdrop(ctx, w, h, theme, camX = 0) {
+    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    if (theme === 'volcano') {
+      grad.addColorStop(0, '#450a0a');
+      grad.addColorStop(0.6, '#9a3412');
+      grad.addColorStop(1, '#1c1917');
+    } else if (theme === 'glacier') {
+      grad.addColorStop(0, '#082f49');
+      grad.addColorStop(0.6, '#0284c7');
+      grad.addColorStop(1, '#bae6fd');
+    } else if (theme === 'sky') {
+      grad.addColorStop(0, '#1e1b4b');
+      grad.addColorStop(0.6, '#3730a3');
+      grad.addColorStop(1, '#fde047');
+    } else if (theme === 'ruins') {
+      grad.addColorStop(0, '#1e1b4b');
+      grad.addColorStop(0.6, '#581c87');
+      grad.addColorStop(1, '#090d16');
+    } else if (theme === 'dawn') {
+      grad.addColorStop(0, '#1d4ed8');
+      grad.addColorStop(0.5, '#f59e0b');
+      grad.addColorStop(1, '#fef08a');
+    } else {
+      grad.addColorStop(0, '#090d16');
+      grad.addColorStop(0.55, '#1e3a8a');
+      grad.addColorStop(1, '#0f172a');
+    }
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Parallax Cyber Grid & Towers
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.14)';
+    ctx.lineWidth = 1;
+    const offset = -(camX * 0.25) % 48;
+    for (let x = offset; x < w; x += 48) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+      ctx.stroke();
+    }
+  }
+
+  function renderGameCanvas(now = 0) {
+    const fit = fitCanvas(document.getElementById('game-canvas'));
+    if (fit.ctx) {
+      const { ctx, w, h } = fit;
+      const scaleY = h / 490;
+      game.groundY = 435;
+
+      drawBackdrop(ctx, w, h, game.stageData ? game.stageData.bgTheme : 'eden', game.cameraX);
+
+      ctx.save();
+      const sx = game.shake > 0.5 ? (Math.random() - 0.5) * game.shake : 0;
+      const sy = game.shake > 0.5 ? (Math.random() - 0.5) * game.shake : 0;
+      ctx.scale(scaleY, scaleY);
+      ctx.translate(-game.cameraX + sx, sy);
+
+      // Floor & Platforms
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, game.groundY, game.stageWidth, 65);
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(0, game.groundY, game.stageWidth, 4);
+
+      game.platforms.forEach(pl => {
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(pl.x, pl.y, pl.w, pl.h);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.6;
+        ctx.strokeRect(pl.x, pl.y, pl.w, pl.h);
+      });
+
+      // Afterimages
+      game.afterimages.forEach(ai => {
+        drawHunterSprite(ctx, ai.x, ai.y, ai.facing, ai.hunter, true, ai.life * 0.45);
+      });
+
+      // Enemies
+      game.enemies.forEach(en => {
+        ctx.fillStyle = '#be123c';
+        ctx.strokeStyle = '#fde047';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.roundRect(en.x, en.y, en.w, en.h, 6);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(en.x + 6, en.y + 9, 16, 5);
+      });
+
+      // Boss
+      if (game.boss) {
+        const b = game.boss;
+        ctx.save();
+        if (b.hurtTimer > 0 && b.hurtTimer % 2 === 0) ctx.globalAlpha = 0.5;
+        ctx.fillStyle = b.color;
+        ctx.strokeStyle = b.accent;
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        ctx.roundRect(b.x, b.y, b.w, b.h, 10);
+        ctx.fill();
+        ctx.stroke();
+
+        // Boss visor & crest
+        ctx.fillStyle = '#090d16';
+        ctx.fillRect(b.x + 8, b.y + 12, b.w - 16, 10);
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(b.x + (b.facing < 0 ? 10 : b.w - 22), b.y + 14, 12, 5);
+        ctx.restore();
+      }
+
+      // Player Hunter
+      const p = game.player;
+      if (p.invuln === 0 || p.invuln % 4 < 2) {
+        const hasAnyArmor = Object.values(progress.armor).some(Boolean);
+        drawHunterSprite(ctx, p.x, p.y, p.facing, progress.activeHunter, hasAnyArmor, 1);
+
+        // Charge aura ring for X
+        if (progress.activeHunter === 'x' && p.chargeFrames >= 12) {
+          ctx.strokeStyle = p.chargeFrames >= 58 ? '#fde047' : '#38bdf8';
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          ctx.arc(p.x + 14, p.y + 19, 22 + Math.sin(now / 45) * 3, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        // Z-Saber slash arc visual
+        if (progress.activeHunter === 'zero' && p.saberTimer > 0) {
+          ctx.strokeStyle = '#34d399';
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.arc(p.x + 14 + p.facing * 14, p.y + 18, 26, -0.9, 0.9);
+          ctx.stroke();
+        }
+      }
+
+      // Projectiles
+      game.projectiles.forEach(pr => {
+        ctx.fillStyle = pr.color;
+        ctx.beginPath();
+        ctx.arc(pr.x, pr.y, pr.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Sparks
+      game.particles.forEach(pt => {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, pt.life);
+        ctx.fillStyle = pt.color;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      ctx.restore();
+
+      // Screen-Space Vertical HP Bars (Classic Rockman X Left Player Bar & Right Boss Bar!)
+      drawVerticalHpGauge(ctx, 12, 16, p.hp, p.maxHp,
+        progress.activeHunter === 'x' ? '#38bdf8' : progress.activeHunter === 'zero' ? '#fb7185' : '#fbbf24',
+        progress.activeHunter.toUpperCase());
+
+      if (game.boss) {
+        drawVerticalHpGauge(ctx, w - 26, 16, game.boss.hp, game.boss.maxHp, '#fb7185', 'BOSS');
+      }
+
+      // WARNING!! Overlay Banner
+      if (game.mode === 'warning') {
+        ctx.fillStyle = 'rgba(159, 18, 57, 0.82)';
+        ctx.fillRect(0, h * 0.36, w, 54);
+        ctx.fillStyle = '#fde047';
+        ctx.font = '900 20px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('⚠ WARNING!! BOSS APPROACHING ⚠', w * 0.5, h * 0.36 + 34);
+      }
+    }
+
+    // Title Showcase Canvas if active
+    if (document.getElementById('title-screen').classList.contains('active')) {
+      const tFit = fitCanvas(document.getElementById('title-art-canvas'));
+      if (tFit.ctx) {
+        drawBackdrop(tFit.ctx, tFit.w, tFit.h, 'eden', now * 0.04);
+        tFit.ctx.save();
+        tFit.ctx.scale(1.65, 1.65);
+        drawHunterSprite(tFit.ctx, tFit.w * 0.14, 34, 1, 'x', true, 1);
+        drawHunterSprite(tFit.ctx, tFit.w * 0.27, 34, 1, 'zero', false, 1);
+        drawHunterSprite(tFit.ctx, tFit.w * 0.40, 34, -1, 'axl', false, 1);
+        tFit.ctx.restore();
+      }
+    }
+
+    // Story Cutscene Canvas if active
+    if (document.getElementById('story-screen').classList.contains('active')) {
+      const sFit = fitCanvas(document.getElementById('story-canvas'));
+      if (sFit.ctx) {
+        const list = progress.storyMode === 'ending' ? ENDING_SCRIPT : OPENING_SCRIPT;
+        const stepObj = list[progress.storyStep] || list[0];
+        drawBackdrop(sFit.ctx, sFit.w, sFit.h, stepObj.bg, now * 0.03);
+        sFit.ctx.save();
+        sFit.ctx.scale(1.8, 1.8);
+        drawHunterSprite(sFit.ctx, sFit.w * 0.18, 38, 1, 'x', true, 1);
+        drawHunterSprite(sFit.ctx, sFit.w * 0.34, 38, -1, 'zero', false, 1);
+        tFitHeroineSera(sFit.ctx, sFit.w * 0.52, 92, now);
+        sFit.ctx.restore();
+      }
+    }
+  }
+
+  function tFitHeroineSera(ctx, cx, cy, t) {
+    const bob = Math.sin(t / 280) * 2.5;
+    ctx.save();
+    ctx.translate(cx, cy + bob);
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.roundRect(-12, -4, 24, 26, 6);
+    ctx.fill();
+    ctx.fillStyle = '#ffe4d6';
+    ctx.beginPath();
+    ctx.arc(0, -14, 11, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fde047';
+    ctx.fillRect(-10, -24, 20, 4);
+    ctx.restore();
+  }
+
+  function drawVerticalHpGauge(ctx, x, y, hp, maxHp, color, label) {
+    const totalH = 112;
+    const ratio = Math.max(0, Math.min(1, hp / maxHp));
+    ctx.fillStyle = 'rgba(9, 16, 32, 0.85)';
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.5;
+    ctx.fillRect(x, y, 14, totalH);
+    ctx.strokeRect(x, y, 14, totalH);
+
+    const fillH = Math.round((totalH - 4) * ratio);
+    ctx.fillStyle = color;
+    ctx.fillRect(x + 2, y + totalH - 2 - fillH, 10, fillH);
+
+    ctx.fillStyle = '#fef9c3';
+    ctx.font = '900 9.5px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, x + 7, y + totalH + 12);
+  }
+
+  function mainLoop(now) {
+    stepSimulation();
+    renderGameCanvas(now);
+    requestAnimationFrame(mainLoop);
+  }
+
+  /* =========================================================
+     8. SCREENS, STORY CUTSCENES, STAGE SELECT & HUD SYNC
+     ========================================================= */
+  function hideAllScreens() {
+    ['title-screen', 'story-screen', 'select-screen', 'save-screen', 'pause-screen'].forEach(id => {
+      document.getElementById(id).classList.remove('active');
+    });
+  }
+
+  function updateTopHud() {
+    const nameMap = {
+      x: Object.values(progress.armor).some(Boolean) ? '▶ X (PARADISE ARMOR)' : '▶ X (BLUE BOMBER)',
+      zero: '▶ ZERO (Z-SABER)',
+      axl: '▶ AXL (TWIN PISTOLS)'
+    };
+    const colMap = { x: '#38bdf8', zero: '#fb7185', axl: '#fbbf24' };
+    const el = document.getElementById('hud-hunter-name');
+    el.textContent = nameMap[progress.activeHunter];
+    el.style.color = colMap[progress.activeHunter];
+
+    const wLabelMap = {
+      buster: progress.activeHunter === 'zero' ? 'ゼットセイバー' : progress.activeHunter === 'axl' ? 'アクセルバレット' : 'Xバスター',
+      fire: 'フェンリルファング(炎)',
+      ice: 'フロストランス(氷)',
+      thunder: 'ヴァルキュリアスパーク(雷)',
+      gravity: 'シンギュラリティオーブ(重力)'
+    };
+    document.getElementById('hud-weapon-name').textContent = `武器: ${wLabelMap[progress.selectedWeapon] || 'Xバスター'}`;
+    document.getElementById('hud-subtank').textContent = `🧪 SUB-TANK: ${Math.round(progress.subTank)}%`;
+    document.getElementById('hud-double').textContent = `⚡ D-ATK: ${Math.floor(progress.doubleGauge)}%`;
+
+    const armorCnt = Object.values(progress.armor).filter(Boolean).length;
+    const side = document.getElementById('pc-side-progress');
+    if (side) {
+      side.textContent = `撃破ボス: ${progress.defeated.length} / 4 ｜ アーマー: ${armorCnt} / 4`;
+    }
+  }
+
+  function startStoryCutscene(mode) {
+    hideAllScreens();
+    game.mode = 'idle';
+    progress.storyMode = mode;
+    progress.storyStep = 0;
+    document.getElementById('story-header-badge').textContent =
+      mode === 'ending' ? 'ENDING — 失われた楽園の継承者' : 'PROLOGUE — X8の衝撃のその後';
+    sfx.playBgm(mode === 'ending' ? 'ending' : 'title');
+    renderStoryStep();
+    document.getElementById('story-screen').classList.add('active');
+  }
+
+  function renderStoryStep() {
+    const list = progress.storyMode === 'ending' ? ENDING_SCRIPT : OPENING_SCRIPT;
+    const item = list[progress.storyStep];
+    if (!item) {
+      if (progress.storyMode === 'ending') {
+        const rank = progress.defeated.length === 4 ? 'RANK: S（真の楽園の守護者）' : 'RANK: A（新時代の希望）';
+        showToast(`🎉 ROCKMAN X9 クリアおめでとうございます！ ${rank}`, 5000);
+        hideAllScreens();
+        document.getElementById('title-screen').classList.add('active');
+        sfx.playBgm('title');
+      } else {
+        openStageSelect();
+      }
+      return;
+    }
+    document.getElementById('story-speaker-line').textContent = item.speaker;
+    document.getElementById('story-text-box').textContent = item.text;
+  }
+
+  function openStageSelect() {
+    hideAllScreens();
+    game.mode = 'idle';
+    sfx.playBgm('select');
+    updateTopHud();
+
+    const a = progress.armor;
+    document.getElementById('armor-status-bar').innerHTML = `
+      <strong style="color:#38bdf8;">◆ PARADISE ARMOR 装着状況：</strong>
+      HEAD[${a.head ? '✔' : '－'}] BODY[${a.body ? '✔' : '－'}] ARM[${a.arm ? '✔' : '－'}] FOOT[${a.foot ? '✔' : '－'}]
+    `;
+
+    const grid = document.getElementById('boss-grid-container');
+    grid.innerHTML = '';
+
+    BOSSES.forEach(b => {
+      const done = progress.defeated.includes(b.id);
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = `boss-card ${done ? 'cleared' : ''}`;
+      card.innerHTML = `
+        <strong style="color:${done ? '#6ee7b7' : b.color};font-size:12px;">${done ? '✔ CLEAR: ' : ''}${b.name}</strong>
+        <span style="font-size:10px;color:#cbd5e1;">${b.title}</span>
+        <span style="font-size:10px;color:#fde047;">報酬: ${b.armorPart.toUpperCase()}パーツ</span>
+      `;
+      card.onclick = () => launchStage(b);
+      grid.appendChild(card);
+    });
+
+    // Final Stage Card (Unlocks after at least 2 bosses or anytime for quick clear)
+    const fCard = document.createElement('button');
+    fCard.type = 'button';
+    fCard.className = 'boss-card final-boss';
+    fCard.innerHTML = `
+      <strong style="color:#fde047;font-size:13px;">⚔ FINAL STAGE: 空中楽園エデンIX 中枢コア</strong>
+      <span style="font-size:10.5px;color:#ffe4e6;">決戦：セラフ・ルミネ ＆ シグマ・オメガ最終形態（撃破ボス ${progress.defeated.length}/4）</span>
+    `;
+    fCard.onclick = () => launchStage(FINAL_BOSS);
+    grid.appendChild(fCard);
+
+    document.getElementById('select-screen').classList.add('active');
+  }
+
+  function launchStage(bossDef) {
+    hideAllScreens();
+    game.stageData = bossDef;
+    buildStageGeometry(bossDef);
+    updateTopHud();
+    game.mode = 'playing';
+    sfx.playBgm('stage');
+  }
+
+  function openSaveScreen(mode) {
+    progress.saveMode = mode;
+    progress.pendingDelSlot = null;
+    progress.pendingDelAll = false;
+    document.getElementById('save-screen-title').textContent =
+      mode === 'save' ? '💾 セーブスロット選択' : '📂 ロードスロット選択';
+    document.getElementById('btn-delete-all-saves').textContent = '🗑 すべてのセーブデータを削除する';
+    renderSaveScreen();
+    document.getElementById('save-screen').classList.add('active');
+  }
+
+  function renderSaveScreen() {
+    const list = document.getElementById('save-slot-list');
+    list.innerHTML = '';
+    const saves = readAllSaves();
+
+    for (let s = 1; s <= MAX_SLOTS; s++) {
+      const item = saves[String(s)];
+      const box = document.createElement('div');
+      box.className = 'info-panel';
+      box.style.display = 'flex';
+      box.style.flexDirection = 'column';
+      box.style.gap = '6px';
+
+      if (item) {
+        const delReady = progress.pendingDelSlot === s;
+        box.innerHTML = `
+          <div style="display:flex;justify-content:space-between;">
+            <strong style="color:#fde047;">SLOT ${s}：${item.summary}</strong>
+            <span style="font-size:10.5px;color:#94a3b8;">${item.timestamp}</span>
+          </div>
+          <div style="display:flex;gap:6px;">
+            ${progress.saveMode === 'save'
+              ? `<button type="button" class="tiny-btn gold" style="flex:1;" data-act="save" data-s="${s}">💾 上書きセーブ</button>`
+              : `<button type="button" class="tiny-btn gold" style="flex:1;" data-act="load" data-s="${s}">📂 ロードして再開</button>`
+            }
+            <button type="button" class="tiny-btn danger" data-act="del" data-s="${s}">${delReady ? '⚠ 削除確定' : '🗑 削除'}</button>
+          </div>
+        `;
+      } else {
+        box.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="color:#94a3b8;font-weight:800;">SLOT ${s}：空きスロット</span>
+            ${progress.saveMode === 'save'
+              ? `<button type="button" class="tiny-btn gold" data-act="save" data-s="${s}">💾 ここにセーブ</button>`
+              : `<span style="font-size:10.5px;color:#64748b;">データなし</span>`
+            }
+          </div>
+        `;
+      }
+
+      box.querySelectorAll('button').forEach(btn => {
+        btn.onclick = () => {
+          const act = btn.dataset.act;
+          const sn = parseInt(btn.dataset.s, 10);
+          if (act === 'save') saveToSlot(sn);
+          else if (act === 'load') loadFromSlot(sn);
+          else if (act === 'del') deleteSaveSlot(sn);
+        };
+      });
+
+      list.appendChild(box);
+    }
+  }
+
+  function openPauseMenu() {
+    if (game.mode !== 'playing' && game.mode !== 'warning') return;
+    game.mode = 'paused';
+    const grid = document.getElementById('weapon-switch-grid');
+    grid.innerHTML = '';
+
+    const weapons = [
+      { id: 'buster', label: '標準バスター / セイバー', unlocked: true },
+      { id: 'fire', label: '🔥 フェンリルファング', unlocked: progress.defeated.includes('fenrir') },
+      { id: 'ice', label: '❄ フロストランス', unlocked: progress.defeated.includes('leviathan') },
+      { id: 'thunder', label: '⚡ ヴァルキュリアスパーク', unlocked: progress.defeated.includes('valkyrie') },
+      { id: 'gravity', label: '🌀 シンギュラリティオーブ', unlocked: progress.defeated.includes('sphinx') }
+    ];
+
+    weapons.forEach(w => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `tiny-btn ${progress.selectedWeapon === w.id ? 'gold' : ''}`;
+      btn.style.padding = '7px';
+      btn.style.opacity = w.unlocked ? '1' : '0.45';
+      btn.textContent = w.unlocked ? w.label : '🔒 未取得';
+      btn.onclick = () => {
+        if (!w.unlocked) {
+          showToast('対応するボスを撃破すると解放されます！');
+          return;
+        }
+        progress.selectedWeapon = w.id;
+        updateTopHud();
+        openPauseMenu();
+      };
+      grid.appendChild(btn);
+    });
+
+    document.getElementById('pause-screen').classList.add('active');
+  }
+
+  /* =========================================================
+     9. BUTTON & PC KEYBOARD EVENT WIRING
+     ========================================================= */
+  document.getElementById('btn-start-new').onclick = () => {
+    sfx.unlock();
+    resetProgress();
+    startStoryCutscene('opening');
+  };
+
+  document.getElementById('btn-open-load').onclick = () => {
+    sfx.unlock();
+    openSaveScreen('load');
+  };
+
+  document.getElementById('btn-title-del').onclick = () => {
+    openSaveScreen('load');
+    deleteAllSaves();
+  };
+
+  document.getElementById('btn-story-next').onclick = () => {
+    sfx.sfxJump();
+    progress.storyStep++;
+    renderStoryStep();
+  };
+
+  document.getElementById('btn-skip-story').onclick = () => {
+    if (progress.storyMode === 'ending') {
+      progress.storyStep = 99;
+      renderStoryStep();
+    } else {
+      openStageSelect();
+    }
+  };
+
+  document.getElementById('btn-select-save').onclick = () => openSaveScreen('save');
+  document.getElementById('btn-select-title').onclick = () => {
+    hideAllScreens();
+    document.getElementById('title-screen').classList.add('active');
+    sfx.playBgm('title');
+  };
+
+  document.getElementById('btn-close-save').onclick = () => {
+    document.getElementById('save-screen').classList.remove('active');
+  };
+  document.getElementById('btn-delete-all-saves').onclick = deleteAllSaves;
+
+  document.getElementById('pad-tag').onclick = cycleHunter;
+  document.getElementById('pad-double').onclick = triggerDoubleAttack;
+  document.getElementById('btn-hud-pause').onclick = openPauseMenu;
+  document.getElementById('btn-hud-mute').onclick = (e) => {
+    const on = sfx.toggleMute();
+    e.target.textContent = on ? '🔊 [M]' : '🔇 [M]';
+    showToast(on ? '🔊 サウンド ON' : '🔇 サウンド OFF');
+  };
+
+  document.getElementById('btn-resume-game').onclick = () => {
+    document.getElementById('pause-screen').classList.remove('active');
+    game.mode = 'playing';
+  };
+  document.getElementById('btn-pause-subtank').onclick = useSubTank;
+  document.getElementById('btn-pause-save').onclick = () => openSaveScreen('save');
+  document.getElementById('btn-pause-abort').onclick = openStageSelect;
+
+  document.getElementById('comms-box').onclick = () => {
+    document.getElementById('comms-box').classList.remove('active');
+  };
+
+  // Full PC Keyboard Support
+  window.addEventListener('keydown', (e) => {
+    const k = e.key.toLowerCase();
+    if (k === 'm') {
+      document.getElementById('btn-hud-mute').click();
+      return;
+    }
+
+    if (document.getElementById('title-screen').classList.contains('active')) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        document.getElementById('btn-start-new').click();
+      }
+      return;
+    }
+
+    if (document.getElementById('story-screen').classList.contains('active')) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        document.getElementById('btn-story-next').click();
+      } else if (k === 'escape') {
+        document.getElementById('btn-skip-story').click();
+      }
+      return;
+    }
+
+    if (k === 'p' || k === 'escape') {
+      if (document.getElementById('save-screen').classList.contains('active')) {
+        document.getElementById('save-screen').classList.remove('active');
+      } else if (document.getElementById('pause-screen').classList.contains('active')) {
+        document.getElementById('btn-resume-game').click();
+      } else {
+        openPauseMenu();
+      }
+      return;
+    }
+
+    if (game.mode !== 'playing') return;
+
+    if (e.key === 'ArrowLeft' || k === 'a') setVirtualKey('left', true);
+    else if (e.key === 'ArrowRight' || k === 'd') setVirtualKey('right', true);
+    else if (k === 'z' || e.key === ' ' || k === 'w' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      setVirtualKey('jump', true);
+    } else if (k === 'x' || e.key === 'Shift') setVirtualKey('dash', true);
+    else if (k === 'c' || k === 'j' || e.key === 'Enter') setVirtualKey('attack', true);
+    else if (k === 'v' || k === 'k') setVirtualKey('special', true);
+    else if (k === 'q' || k === 'e' || e.key === 'Tab') {
+      e.preventDefault();
+      cycleHunter();
+    } else if (k === 'f') triggerDoubleAttack();
+    else if (k === 'r') useSubTank();
+  });
+
+  window.addEventListener('keyup', (e) => {
+    const k = e.key.toLowerCase();
+    if (e.key === 'ArrowLeft' || k === 'a') setVirtualKey('left', false);
+    else if (e.key === 'ArrowRight' || k === 'd') setVirtualKey('right', false);
+    else if (k === 'z' || e.key === ' ' || k === 'w' || e.key === 'ArrowUp') setVirtualKey('jump', false);
+    else if (k === 'x' || e.key === 'Shift') setVirtualKey('dash', false);
+    else if (k === 'c' || k === 'j' || e.key === 'Enter') setVirtualKey('attack', false);
+    else if (k === 'v' || k === 'k') setVirtualKey('special', false);
+  });
+
+  // Start rendering & game loop
+  updateTopHud();
+  requestAnimationFrame(mainLoop);
+})();
+</script>
+</body>
+</html>
